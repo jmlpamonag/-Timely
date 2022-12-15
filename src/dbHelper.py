@@ -3,11 +3,8 @@ from dateutil import tz
 from datetime import timedelta
 
 class dbHelper:
-    insertQuery = """INSERT INTO RECORD(startDate, endDate, task, tag)
-    VALUES (?, ?, ?, ?)"""
-
-    def insert(record):
-        return f"INSERT INTO RECORD VALUES ({record.startDate}, {record.endDate}, {record.task}, {record.tag})"
+    insertQuery = """INSERT INTO RECORD(startDate, endDate, task, tag, timeSpent)
+    VALUES (?, ?, ?, ?, ?)"""
 
     def getAll():
         return "SELECT * FROM RECORD"
@@ -16,23 +13,29 @@ class dbHelper:
         dateString = date.split("/") 
      
         start = datetime(int(dateString[0]), int(dateString[1]), int(dateString[2]), 0, 0, 0)
-        print(start)
-
         end = start + timedelta(1)
-        print(end)
 
         query = "SELECT * FROM RECORD WHERE startDate > '" + str(start) + "' AND endDate < '" + str(end) + "'"
-        print(query)
         return query
     
     def getRecordByTask(task):
-
         query = "SELECT * FROM RECORD WHERE task like '%" + str(task) + "%'"
-        print(query)
         return query
 
     def getRecordByTag(tag):
-
         query = "SELECT * FROM RECORD WHERE tag like '%" + str(tag) + "%'"
-        print(query)
+        return query
+
+    def getRecordsBetweenDates(fromDate, endDate):
+        start = fromDate.split("/") 
+        end = endDate.split("/")
+     
+        start = datetime(int(start[0]), int(start[1]), int(start[2]), 0, 0, 0)
+        end = datetime(int(end[0]), int(end[1]), int(end[2]), 0, 0, 0)
+        
+        query = "SELECT * FROM RECORD WHERE startDate > '" + str(start) + "' AND endDate < '" + str(end) + "'"
+        return query
+
+    def getPriority():
+        query = "SELECT * FROM RECORD ORDER BY timeSpent DESC LIMIT 2"
         return query
