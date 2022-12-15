@@ -35,21 +35,20 @@ def main():
         tag = ""
         dt = ""
 
-        if(length > 6):
-            tag = request[length -1]
-            for i in range(length - 1):
-                if i > 3:
-                    print(request[i])
-                    task = task + request[i].replace("'", "") + " "
-        else:
-            task = request[4]
-            tag = request[5]
-
-        print(f"TASK: {task}")
-        print(f"TAG: {tag}")
-
-
         if request[0] == "record":
+            if(length > 6):
+                tag = request[length -1]
+                for i in range(length - 1):
+                    if i > 3:
+                        print(request[i])
+                        task = task + request[i].replace("'", "") + " "
+            else:
+                task = request[4]
+                tag = request[5]
+
+            print(f"TASK: {task}")
+            print(f"TAG: {tag}")
+
             if request[1] == "today":
                 dt = datetime.today().strftime("%Y/%m/%d")
             else: 
@@ -67,6 +66,47 @@ def main():
             res = cur.execute(dbHelper.getAll())
             data = res.fetchall()
             print(data)
+        elif request[0] == "query":
+            if(length < 2):
+                print("Invalid query request. Please try again")
+                break
+
+            if request[1] == "today" or "/" in request[1]:
+                if request[1] == "today":
+                    dt = datetime.today().strftime("%Y/%m/%d")
+                else: 
+                    dt = request[1]
+
+                print(dt)
+                res = cur.execute(dbHelper.getRecordByDate(dt))
+                data = res.fetchall()
+                print(data)
+            elif "'" in request[1]:
+                if length > 2:
+                    for i in range(length):
+                        if i > 0:
+                            print(request[i])
+                            task = task + request[i].replace("'", "") + " "
+                else:
+                    task = request[1].replace("'", "")
+
+                task = task.strip()
+
+                res = cur.execute(dbHelper.getRecordByTask(task))
+                data = res.fetchall()
+                print(data)
+            elif ":" in request[1]:
+                tag = request[1].replace(":", "")
+                res = cur.execute(dbHelper.getRecordByTag(tag.upper()))
+                data = res.fetchall()
+                print(data)
+            else:
+                print("Something went wrong. Please try again.")
+
+
+
+        else:
+            print("Feature does not exist. Please try again.")
 
     con.close()
 
